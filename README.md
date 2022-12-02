@@ -80,6 +80,7 @@ declare module 'koa-router' {
 
 ### 学习FLQ的使用
 介绍:  用于快速查询Mysql的应用库   优点： 简便
+
 示例
 + 以前:
   `db.query('select * from student where id = ?', 1)`
@@ -101,3 +102,5 @@ declare module 'koa-router' {
   uid[商家id]       ->   varchar（字符串类型）
 3. 配置flq进行连接数据库
 4. 测试连接效果
+
+## 后端-  注册/登录接口
