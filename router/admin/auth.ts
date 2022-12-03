@@ -1,8 +1,10 @@
 // * 商家验证接口模块
 import Router from 'koa-router'
+import jsonwebtoken from 'jsonwebtoken'
 import flq from '../../SQLConnect'
 import validator from '../../middleware/validator'
 import { registerRules } from '../../rules/authRules'
+import { secretKey } from '../../config'
 
 const shop_user = flq.from('shop_user')
 
@@ -24,9 +26,17 @@ router.post('/register', validator(registerRules) , async (ctx) => {
 // 校验参数有效性 （起码不能为空）
 // 校验用户名与密码 【是否存在、正确】
 // 生成Token 响应结果 【后续介绍】 😢
-router.post('/login',async (ctx) => {
-  console.log('登录成功')
-  ctx.success()
+router.post('/login', validator(registerRules), async (ctx) => {
+  // 1. 解析参数字段
+  const { phone, password } = ctx.request.body
+  // 2. 用户名与密码
+  const data = await shop_user.where({ phone, password }).first()
+  // 3. 判断data是否有
+  if (!data) return ctx.error('手机号或密码错误', 302)
+  // 4. 保存当前用户状态【session/cookie  -  JWT认证模式】
+  // 加密头.数据.加密签名
+  const token = jsonwebtoken.sign({ uid: data.uid }, secretKey, { expiresIn: '7d' })
+  ctx.success(token)
 })
 
 export default router.routes()

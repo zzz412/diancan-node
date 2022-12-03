@@ -2,10 +2,12 @@
 import Koa from 'koa'
 import KoaBody from 'koa-body'
 import Cors from 'koa2-cors'
+import JWT from 'koa-jwt'
 import abnormal from './middleware/abnormal'
 import result from './middleware/result'
 import router from './router'
 import './types'
+import { secretKey } from './config'
 
 // 实例化koa
 const app = new Koa()
@@ -18,6 +20,9 @@ app.use(KoaBody())
 app.use(abnormal())
 // 统一返回格式
 app.use(result())
+
+// 开启JWT认证拦截  TOKEN   /admin/auth
+app.use(JWT({ secret: secretKey }).unless({ path: /\/admin\/auth/ }))
 
 // 开启路由并开放所有请求方法
 app.use(router.routes()).use(router.allowedMethods())

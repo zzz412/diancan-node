@@ -104,3 +104,11 @@ declare module 'koa-router' {
 4. 测试连接效果
 
 ## 后端-  注册/登录接口
+
+### JWT的使用
+1. 安装:  `yarn add koa-jwt`
+2. 配置秘钥: YYDS
+3. 开启JWT认证
+4. 处理认证错误
+5. 生成Token: `jsonwebtoken`
+6. 如何携带Token: 在请求头中携带 -> Authorization: `Bearer <token>`

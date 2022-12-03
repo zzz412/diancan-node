@@ -19,9 +19,12 @@ export default () => {
       } else if (error.errors) {
         // 参数校验错误
         ctx.body = { msg: error.errors[0].message, code: 302 }
+      } else if (error.status === 401) {
+        // Token认证错误
+        ctx.body = { msg: 'token错误', code: 301 }
       } else {
         // 未知错误【程序抛出的】
-        ctx.body = { msg: '程序错误了' }
+        ctx.body = { msg: '程序错误了', code: 500 }
         ctx.status = 500
       }
     }

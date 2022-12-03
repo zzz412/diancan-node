@@ -4,7 +4,7 @@ import { Rules } from 'async-validator'
 export const registerRules: Rules = {
   phone: [
     { required: true, message: '手机号不能为空' },
-    { pattern: /1[23456789]\d{9}/, message: '手机号不符合规则'},
+    { pattern: /1[23456789]\d{9}/, message: '手机号不符合规则'}
   ],
   password: [
     { required: true, message: '密码不能为空' },
