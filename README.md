@@ -112,3 +112,10 @@ declare module 'koa-router' {
 4. 处理认证错误
 5. 生成Token: `jsonwebtoken`
 6. 如何携带Token: 在请求头中携带 -> Authorization: `Bearer <token>`
+
+## 后端： 文件上传
+**核心步骤:**
+1. 客户端上传图片至服务器端            实现方式:  前端使用el-upload组件上传
+2. 服务器端保存上传的图片              实现方式:  multer @koa/multer
+3. 服务器端将保存的图片上传到对象存储中 实现方式:  七牛云上传 qiniu
+4. 删除本地图片                       实现方式:  fs模块
