@@ -11,6 +11,7 @@ export default () => {
       }
       await next()
     } catch (error) {
+      console.log(error)
       // 后续中间件发生错误都会被catch捕获
       // 判断当前错误类型【是否为已知错误】
       if (error instanceof ResultError) {

@@ -11,3 +11,10 @@ export const registerRules: Rules = {
     { min: 6, max: 12, message: '密码长度要求6-12' }
   ]
 }
+
+// 商家信息更新校验规则
+export const shopInfoRules: Rules = {
+  nickname: { required: true, message: '商家名不能为空'  },
+  address: { required: true, message: '商家地址不能为空'  },
+  logo: { type: 'url', required: true, message: 'Logo不能为空'  }
+}

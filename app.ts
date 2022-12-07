@@ -21,7 +21,7 @@ app.use(abnormal())
 // 统一返回格式
 app.use(result())
 
-// 开启JWT认证拦截  TOKEN   /admin/auth
+// 开启JWT认证拦截  TOKEN   /admin/auth  【将解析后的token信息存放到ctx.state.user中】
 app.use(JWT({ secret: secretKey }).unless({ path: /\/admin\/auth/ }))
 
 // 开启路由并开放所有请求方法
