@@ -5,3 +5,10 @@ export const dishUnitRules: Rules = {
   label: { required: true, message: '单位名不能为空' },
   value: { required: true, message: '单位值不能为空' }
 }
+
+// 菜品类目规则
+export const dishCateRules: Rules = {
+  label: { required: true, message: '类目名不能为空' },
+  value: { required: true, message: '类目值不能为空' },
+  rank: { required: true, message: '排序值不能为空' }
+}
