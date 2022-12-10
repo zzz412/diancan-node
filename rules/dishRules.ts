@@ -12,3 +12,8 @@ export const dishCateRules: Rules = {
   value: { required: true, message: '类目值不能为空' },
   rank: { required: true, message: '排序值不能为空' }
 }
+
+export const dishCateRules2: Rules = { 
+  id: { required: true, message: '类目id不能为空' },
+  ...dishCateRules
+}

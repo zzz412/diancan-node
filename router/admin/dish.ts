@@ -1,7 +1,7 @@
 // 菜品管理模块接口
 import Router from 'koa-router'
 import validator from '../../middleware/validator'
-import { dishCateRules, dishUnitRules } from '../../rules/dishRules'
+import { dishCateRules, dishCateRules2, dishUnitRules } from '../../rules/dishRules'
 import flq from '../../SQLConnect'
 import { PageResult } from '../../types/interface'
 
@@ -42,6 +42,21 @@ router.post('/cate', validator(dishCateRules), async (ctx) => {
 })
 
 // * 修改类目【保证label的唯一性、label修改后需要更新对应菜品的类目名】
+router.put('/cate', validator(dishCateRules2) ,async (ctx) => {
+  // 需要的参数 【id, label?, value?, rank?】
+  const { uid } = ctx.state.user
+  const { id, label } = ctx.data
+  // 1. 验证label的唯一性【不能是自己】
+  const has = await dish_cate.where({ uid, label }).first()
+  if (has && has.id != id) return ctx.error('label重复', 202)
+  // 2. 执行修改操作
+  await dish_cate.where({ uid, id }).set(ctx.data).update()
+  // 3. 修改对应label的菜品【label修改了】
+  if (!has) {
+    await dish_data.where({ uid, cid: id }).set({ category: label }).update()
+  }
+  ctx.success()
+})
 
 
 // * 删除类目【uid与id作为条件、该类目没有菜品才能删除】
