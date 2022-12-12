@@ -1,7 +1,8 @@
 // 菜品管理模块接口
+import dayjs from 'dayjs'
 import Router from 'koa-router'
 import validator from '../../middleware/validator'
-import { dishCateRules, dishCateRules2, dishUnitRules } from '../../rules/dishRules'
+import { dishCateRules, dishCateRules2, dishDataRules, dishDataRules2, dishUnitRules } from '../../rules/dishRules'
 import flq from '../../SQLConnect'
 import { PageResult } from '../../types/interface'
 
@@ -20,8 +21,7 @@ router.get('/cate', async (ctx) => {
   const { page = 1, pageSize = 10 } = ctx.query as any
   const { uid } = ctx.state.user
   // 2. 查询类目 分页【limit({ size: 每页条数, page: 当前页 })】  排序【order({ 字段: 规则 })】
-  const data = await dish_cate.where({ uid }).limit({ size: pageSize, page: page }).order({ rank: 1 }).find()
-  const total = await dish_cate.where({ uid }).count() as number
+  const { total, data } = await dish_cate.where({ uid }).limit({ size: pageSize, page: page }).order({ rank: 1 }).findRows()
   const totalPage = Math.ceil(total / pageSize )
   // 3. 处理响应字段
   const result: PageResult  = { page: +page, total, pageSize: +pageSize, totalPage, list: data }
@@ -58,7 +58,6 @@ router.put('/cate', validator(dishCateRules2) ,async (ctx) => {
   ctx.success()
 })
 
-
 // * 删除类目【uid与id作为条件、该类目没有菜品才能删除】
 router.delete('/cate/:id', async (ctx) => {
   // 1. 解析参数
@@ -72,7 +71,6 @@ router.delete('/cate/:id', async (ctx) => {
   if (!affectedRows) return ctx.error('菜品ID有误', 202)
   ctx.success()
 })
-
 
 // -------  菜品单位  --------
 // * 增加单位
@@ -98,12 +96,65 @@ router.get('/unit' ,async (ctx) => {
   ctx.success(data)
 })
 
-
 // -------  菜品信息  --------
+// 新增菜品【1. 校验参数有效性 2. 添加】
+router.post('/data', validator(dishDataRules) ,async (ctx) => {
+  // 1. 解析参数值
+  const { uid } = ctx.state.user
+  const time = dayjs().format('YYYY-MM-DD hh:mm:ss')
+  // 任务:  校验cid的有效性    校验单位的有效性
+  // 2. 添加菜品
+  await dish_data.value({ ...ctx.data, time, uid }).add()
+  // 3. 响应结果
+  ctx.success()
+})
 
+// 获取菜品列表【1. 校验参数有效性  2. 分页  3. 高级查询【菜品类目、菜品名、菜品状态】  】
+router.get('/data', async (ctx) => {
+  // 1. 获取参数
+  const { page = 1, pageSize = 10, cid, name = '', onsale } = ctx.query as any
+  const { uid } = ctx.state.user
+  // 2. 查询菜品【传递了就查不传递就不查】 
+  const { total, data } = await dish_data.where({ uid, cid, name: { com: 'LIKE', val: `%${name}%` }, onsale }).limit({ size: pageSize, page }).order({ rank: 1 }).findRows()
+  const totalPage = Math.ceil( total / pageSize)
+  // 3. 响应数据
+  const result: PageResult = { page: Number(page), pageSize: Number(pageSize), total, totalPage, list: data }
+  ctx.success(result)
+})
 
+// 获取菜品详情【id】
+router.get('/data/:id',async (ctx) => {
+  // 1. 解析参数
+  const { id } = ctx.params
+  const { uid } = ctx.state.user
+  // 2. 查询菜品
+  const data = await dish_data.where({ uid, id }).field().first()
+  // 3. 响应结果
+  ctx.success(data)
+})
 
+// 修改菜品
+router.put('/data', validator(dishDataRules2) ,async (ctx) => {
+  // 1. 解析参数
+  const { id } = ctx.data
+  const { uid } = ctx.state.user
+  // 2. 执行修改
+  const { affectedRows } = await dish_data.where({ uid, id }).set(ctx.data).update()
+  if (!affectedRows) return ctx.error('id有误', 202)
+  ctx.success()
+})
 
-
+// 上下架菜品  /dish/data/1/0
+router.put('/data/:id/:state',async (ctx) => {
+  // 1. 解析参数
+  const { id, state } = ctx.params
+  const { uid } = ctx.state.user
+  // 校验菜品状态 0 1
+  if (!['0', '1'].includes(state)) return ctx.error('菜品状态有误', 202)
+  // 2. 修改菜品状态
+  const { affectedRows } = await dish_data.where({ uid, id }).set({ onsale: state }).update()
+  if (!affectedRows) return ctx.error('id有误', 202)
+  ctx.success()
+})
 
 export default  router.routes()

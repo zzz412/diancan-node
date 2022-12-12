@@ -16,6 +16,7 @@
     "@types/koa2-cors": "^2.0.2",
     "@types/koa__multer": "^2.0.4",
     "async-validator": "^4.2.5",
+    "dayjs": "^1.11.7",
     "del": "^7.0.0",
     "flq": "^0.2.5",
     "jsonwebtoken": "^8.5.1",
