@@ -115,7 +115,7 @@ router.get('/data', async (ctx) => {
   const { page = 1, pageSize = 10, cid, name = '', onsale } = ctx.query as any
   const { uid } = ctx.state.user
   // 2. 查询菜品【传递了就查不传递就不查】 
-  const { total, data } = await dish_data.where({ uid, cid, name: { com: 'LIKE', val: `%${name}%` }, onsale }).limit({ size: pageSize, page }).order({ rank: 1 }).findRows()
+  const { total, data } = await dish_data.where({ uid, cid, name: { com: 'LIKE', val: `%${name}%` }, onsale: onsale === '' ? undefined : onsale}).limit({ size: pageSize, page }).order({ rank: 1 }).findRows()
   const totalPage = Math.ceil( total / pageSize)
   // 3. 响应数据
   const result: PageResult = { page: Number(page), pageSize: Number(pageSize), total, totalPage, list: data }
